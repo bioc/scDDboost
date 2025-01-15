@@ -11,7 +11,7 @@ biocViews: SingleCell, Software, Clustering, Sequencing, GeneExpression, Differe
 Depends: R (>= 4.2), ggplot2
 LinkingTo: Rcpp, RcppEigen, BH
 Suggests: knitr, rmarkdown, BiocStyle, testthat
-SystemRequirements: c++11
+SystemRequirements: c++14
 Roxygen: list(wrap=FALSE)
 RoxygenNote: 7.1.2
 VignetteBuilder: knitr
