@@ -29,44 +29,8 @@ typedef vector<int> V;
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-// MatrixXd DATA::data;
-
-// vector<MatrixXd> DATA::r_d;
-
-// vector<MatrixXd> DATA::r_r;
-
-// size_t DATA::G;
-
-// size_t DATA::K;
-
-// MatrixXd DATA::r;
-
-// VectorXd DATA::q;
-
-// VectorXd DC::p;;
-
-// int DC::gc;
-
-// size_t DC::PT;
-
-// vector<int> DC::gclus;
-
-// MatrixXi DATA::pat;
-
-// MatrixXd DC::gm;
-
-
+// Enable C++14
+// [[Rcpp::plugins("cpp14")]]
 Rcpp::IntegerVector MCP(Rcpp::IntegerVector X, double MASS, Rcpp::NumericVector PARAM);
 RcppExport SEXP MCP(SEXP X, SEXP MASS, SEXP PARAM) {
     BEGIN_RCPP
@@ -333,41 +297,23 @@ RcppExport SEXP EBS(SEXP X, SEXP Y, SEXP Z, SEXP W, SEXP iter, SEXP hyper,SEXP p
     copy(TT.begin(),TT.end(),hyp.data());
     
     //initialize parameters
-    //double hp[gcc+1];
 //        alpha
     double alpha = hyp[0];
-   // hp[0] = hyp[0];
 //        beta
     VectorXd beta(gcc);
     for(int i = 0; i < gcc;++i)
         beta[i] = hyp[i + 1];
     
-//     double stepsize1 = 1e-6;
     
-//     double stepsize2 = 1e-3;
-    
-//        DATA init(data,conditions,sf);    
     DC init(data, conditions, sf, gclus, Part);
     
-//    cout<<"first init"<<endl;
 
     vector<MatrixXd> A = init.cal_gm(alpha,beta);
     
     init.gm = init.cal_delta(A[0]);
     
-    //double dAlpha = init.cal_drv(A[1]);
-    
-    //double dBeta = init.cal_drv(A[2]);
-    
-//    cout<<"cal_gm done"<<endl;
-    
     VectorXd tm_p(init.PT);
     
-    //if(hp[0] + stepsize1 * dAlpha > 0)
-        //hp[0] = hp[0] + stepsize1 * dAlpha;
-    
-    //if(hp[1] + stepsize2 * dBeta > 0)
-        //hp[1] = hp[1] + stepsize2 * dBeta;
     
     init.go_drv(A[1],A[2],alpha,beta,stepsize1,stepsize2);
     
@@ -382,24 +328,12 @@ RcppExport SEXP EBS(SEXP X, SEXP Y, SEXP Z, SEXP W, SEXP iter, SEXP hyper,SEXP p
     int o = 0;
     
     while(diff > 1e-3 && o < itr){
-        //stepsize1 /= 2;
-        //stepsize2 /= 2;
         
         A = init.cal_gm(alpha,beta);
         init.gm = init.cal_delta(A[0]);
         
         init.go_drv(A[1],A[2],alpha,beta,stepsize1,stepsize2);
-        //double dAlpha = init.cal_drv(A[1]);
     
-        //double dBeta = init.cal_drv(A[2]);
-        
-        //if(hp[0] + stepsize1 * dAlpha > 0)
-            //hp[0] = hp[0] + stepsize1 * dAlpha;
-    
-        //if(hp[1] + stepsize2 * dBeta > 0)
-            //hp[1] = hp[1] + stepsize2 * dBeta;
-        
-        
         
         tt = init.gm.sum();
         tm_p = init.gm.colwise().sum()/tt;
@@ -408,7 +342,6 @@ RcppExport SEXP EBS(SEXP X, SEXP Y, SEXP Z, SEXP W, SEXP iter, SEXP hyper,SEXP p
         ++o;
     }
     
-//    cout<<"final done"<<endl;
 
     return Rcpp::List::create(Named("DEpattern")=init.gm,Named("r")=init.r,Named("p")=init.p,Named("iteration")=o,Named("Alpha") = alpha, Named("Beta") = beta, Named("obj") = A[0] * init.p);
     
